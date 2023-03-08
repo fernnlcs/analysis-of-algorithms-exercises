@@ -14,31 +14,50 @@ public class App {
                 new Item(1, 2),
                 new Item(4, 10));
 
-        List<Item> bruteForceResult = bruteForce(knapsack, store);
+        bruteForce(knapsack, store);
+
+        System.out.print("A melhor combinação é a dos itens ");
+        System.out.print(knapsack.getItems());
+        System.out.print(" cujo peso é " + knapsack.getTotalWeight());
+        System.out.print(" e o valor é $ " + knapsack.getTotalValue());
     }
 
-    public static List<Item> bruteForce(Knapsack knapsack, List<Item> store) {
+    public static void bruteForce(Knapsack knapsack, List<Item> store) {
         int totalAmountOfItems = store.size();
-        List<List<Item>> possibilities = new ArrayList<>();
+        List<List<Item>> combinations = new ArrayList<>();
 
         // Gerar listas de n itens
-        for (int n = 1; n < totalAmountOfItems; n++) {
-            System.out.println("Listas de " + n + " itens:");
+        for (int max = 0; max <= totalAmountOfItems; max++) {
             List<Item> accumulator = new ArrayList<>();
-            next(store, possibilities, accumulator, n, -1);
+            generate(store, combinations, accumulator, max, -1);
         }
 
-        return possibilities.get(0);
+        for (List<Item> combination : combinations) {
+            Knapsack test = new Knapsack();
+            test.setItems(combination);
+
+            if (test.isValid() && test.getTotalValue() > knapsack.getTotalValue()) {
+                knapsack.setItems(combination);
+            }
+        }
     }
 
-    public static void next(List<Item> store, List<List<Item>> possibilities, List<Item> accumulator, int max, int last) {
-        if (accumulator.size() < max) {
-            accumulator.add(store.get(++last));
-            next(store, possibilities, accumulator, max, last);
-            accumulator.remove(store.get(last));
-        } else {
-            possibilities.add(List.copyOf(accumulator));
-            System.out.println("Possibilidade: " + accumulator.toString());
+    public static void generate(List<Item> store, List<List<Item>> combinations, List<Item> accumulator, int max,
+            int last) {
+        if (max == 0) {
+            combinations.add(List.copyOf(accumulator));
+        }
+        for (int i = last + 1; i < store.size(); i++) {
+            if (accumulator.size() < max) {
+                accumulator.add(store.get(++last));
+                generate(store, combinations, accumulator, max, last);
+
+                if (accumulator.size() >= max) {
+                    combinations.add(List.copyOf(accumulator));
+                }
+
+                accumulator.remove(store.get(last));
+            }
         }
     }
 }
