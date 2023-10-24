@@ -24,10 +24,4 @@ public class Item {
     public double getValue() {
         return value;
     }
-
-    @Override
-    public String toString() {
-        return "#" + getId();
-        // return "Item [weight=" + weight + ", value=" + value + "]";
-    }
 }
